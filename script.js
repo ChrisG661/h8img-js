@@ -1,6 +1,6 @@
 // Christopher G (2021)
 // This code took more time to write than it should be. CORS, WHY?
-// An overengineered yet buggy code
+// An overengineered yet buggy piece of ~art~ code
 
 console.log("hi :)");
 var BASE = "https://himawari8-dl.nict.go.jp/himawari8/img/D531106";
@@ -74,8 +74,10 @@ async function getEarth(){
 (function() {
   window.addEventListener('resize', resizeCanvas, false);
   function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerWidth;
+    //canvas.width = window.innerWidth;
+    //canvas.height = window.innerWidth;
+    canvas.width = window.innerHeight;
+    canvas.height = window.innerHeight;
     LEVEL = (canvas.width > (LEVEL * 550)) ? 8 : 4;
     //console.log(LEVEL);
     getEarth(LEVEL); 
