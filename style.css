@@ -1,4 +1,8 @@
+body {
+  background: black;
+}
+
 #h8 {
   display:block;
-  margin: 0px;
+  margin: auto;
 }
