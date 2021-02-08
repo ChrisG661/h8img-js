@@ -74,10 +74,8 @@ async function getEarth(){
 (function() {
   window.addEventListener('resize', resizeCanvas, false);
   function resizeCanvas() {
-    //canvas.width = window.innerWidth;
-    //canvas.height = window.innerWidth;
-    canvas.width = window.innerHeight;
-    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerWidth;
     LEVEL = (canvas.width > (LEVEL * 550)) ? 8 : 4;
     //console.log(LEVEL);
     getEarth(LEVEL); 
