@@ -74,8 +74,11 @@ async function getEarth(){
 (function() {
   window.addEventListener('resize', resizeCanvas, false);
   function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerWidth;
+    // support hidpi screen
+    canvas.width = window.innerWidth * window.devicePixelRatio;
+    canvas.height =  window.innerWidth * window.devicePixelRatio;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerWidth + 'px';
     LEVEL = (canvas.width > (LEVEL * 550)) ? 8 : 4;
     //console.log(LEVEL);
     getEarth(LEVEL); 
