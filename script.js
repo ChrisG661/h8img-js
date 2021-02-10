@@ -67,7 +67,7 @@ async function getEarth(currentLevel, detailChange = false){
     for (var y of v) {
       url = latestUrl(x, y, currentLevel, date);
       var currentScale = ctx.canvas.width / currentLevel;
-      console.log(currentScale)
+      //console.log(currentScale)
       img = new Image();
       img.onload = (
         function(x, y, scale){
@@ -80,23 +80,6 @@ async function getEarth(currentLevel, detailChange = false){
     }
   }
 }
-
-(function() {
-  window.addEventListener('resize', resizeCanvas, false);
-  function resizeCanvas() {
-    // support hidpi screen
-    //canvas.width = LEVEL * SCALE;
-    //canvas.height = LEVEL * SCALE;
-    //canvas.width = window.innerWidth * window.devicePixelRatio;
-    //canvas.height =  window.innerWidth * window.devicePixelRatio;
-    canvas.style.width = window.innerWidth + 'px';
-    canvas.style.height = window.innerWidth + 'px';
-    //LEVEL = ((canvas.width * window.devicePixelRatio)  > (LEVEL * 550)) ? 4 : 2; disabled auto increase detail
-    //console.log(LEVEL);
-    //getEarth(LEVEL, true); 
-  }
-  resizeCanvas();
-})();
 
 function moreDetail() {
   if (LEVEL == 16) {
@@ -116,4 +99,47 @@ var timer = setInterval(function() {
     getEarth(LEVEL);
 }, 60 * 5 * 1000);
 
-window.onload = getEarth(LEVEL, true);
+canvas.onload = getEarth(LEVEL, true);
+
+const panzoom = Panzoom(canvas, {
+  minScale: 1,
+  maxScale: 5,
+  panOnlyWhenZoomed: true
+})
+
+canvas.parentElement.addEventListener('wheel', function (event) {
+  if (!event.shiftKey) return;
+  panzoom.zoomWithWheel(event);
+})
+
+// 2,4,8,16,20
+
+canvas.addEventListener('panzoomchange', (event) => {
+  var prevLevel = LEVEL;
+  //console.log()
+  //console.log(event.detail) // => { x: 0, y: 0, scale: 1 }
+  if (event.detail.scale <= 1) {
+    LEVEL = 2
+  }
+  else if (event.detail.scale <= 2) {
+    LEVEL = 4
+  }
+  else if (event.detail.scale <= 3) {
+    LEVEL = 8
+  }
+  else if (event.detail.scale <= 4) {
+    LEVEL = 16
+  }
+  else if (event.detail.scale <= 5) {
+    //LEVEL = 20
+    LEVEL = 16
+  }
+  else {
+    console.log('huh')
+    LEVEL = 2
+  }
+  if (LEVEL != prevLevel) {
+    //console.log("current scale: ", prevLevel, LEVEL, event.detail.scale)
+    getEarth(LEVEL, true)
+  }
+})
