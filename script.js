@@ -8,6 +8,7 @@ var BASE_CORS = "himawari8-dl.nict.go.jp:443/himawari8/img/D531106";
 var CORS = "https://cors-px.chrisg661.repl.co/"; // CORS proxy
 var SCALE = 550;
 var LEVEL = 2;
+var CURRENT_DATE;
 var canvas = document.getElementById('h8');
 var ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = true;
@@ -48,16 +49,25 @@ function latestUrl(x, y, level, date) {
   return url;
 }
 
-async function getEarth(){
-  var h = [...Array(LEVEL).keys()];
-  var v = [...Array(LEVEL).keys()];
+async function getEarth(currentLevel, detailChange = false){
+  canvas.width = currentLevel * SCALE;
+  canvas.height = currentLevel * SCALE;
+  var h = [...Array(currentLevel).keys()];
+  var v = [...Array(currentLevel).keys()];
   var img;
   var url;
-  var date = await latestdate(LEVEL).then(function (date) {return date}); // don't know if this is necessary, but whatever.
+  var date = await latestdate(currentLevel).then(function (date) {return date});
+  if (date == CURRENT_DATE && !detailChange) {
+    return;
+  }
+  else {
+    CURRENT_DATE = date;
+  }
   for (var x of h) {
     for (var y of v) {
-      url = latestUrl(x, y, LEVEL, date);
-      var currentScale = ctx.canvas.width / LEVEL;
+      url = latestUrl(x, y, currentLevel, date);
+      var currentScale = ctx.canvas.width / currentLevel;
+      console.log(currentScale)
       img = new Image();
       img.onload = (
         function(x, y, scale){
@@ -75,26 +85,35 @@ async function getEarth(){
   window.addEventListener('resize', resizeCanvas, false);
   function resizeCanvas() {
     // support hidpi screen
-    canvas.width = window.innerWidth * window.devicePixelRatio;
-    canvas.height =  window.innerWidth * window.devicePixelRatio;
+    //canvas.width = LEVEL * SCALE;
+    //canvas.height = LEVEL * SCALE;
+    //canvas.width = window.innerWidth * window.devicePixelRatio;
+    //canvas.height =  window.innerWidth * window.devicePixelRatio;
     canvas.style.width = window.innerWidth + 'px';
     canvas.style.height = window.innerWidth + 'px';
-    LEVEL = (canvas.width > (LEVEL * 550)) ? 8 : 4;
+    //LEVEL = ((canvas.width * window.devicePixelRatio)  > (LEVEL * 550)) ? 4 : 2; disabled auto increase detail
     //console.log(LEVEL);
-    getEarth(LEVEL); 
+    //getEarth(LEVEL, true); 
   }
   resizeCanvas();
 })();
 
 function moreDetail() {
-  LEVEL = LEVEL * 2;
-  if (LEVEL > 16) {
-    LEVEL = 2;
+  if (LEVEL == 16) {
+    LEVEL = 20;
   }
-  //console.log(LEVEL);
-  getEarth(LEVEL);
+  else if (LEVEL == 20) {
+    LEVEL = 2; // back to lowest
+  }
+  else {
+    LEVEL = LEVEL * 2;
+  }
+  console.log(LEVEL);
+  getEarth(LEVEL, true);
 }
 
 var timer = setInterval(function() {
     getEarth(LEVEL);
 }, 60 * 5 * 1000);
+
+window.onload = getEarth(LEVEL, true);
