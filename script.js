@@ -3,14 +3,15 @@
 // An overengineered yet buggy piece of ~art~ code
 
 console.log("hi :)");
-var BASE = "https://himawari8-dl.nict.go.jp/himawari8/img/D531106";
-var BASE_CORS = "himawari8-dl.nict.go.jp:443/himawari8/img/D531106";
-var CORS = "https://cors-px.chrisg661.repl.co/"; // CORS proxy
-var SCALE = 550;
+const BASE = "https://himawari8-dl.nict.go.jp/himawari8/img/D531106";
+const BASE_CORS = "himawari8-dl.nict.go.jp:443/himawari8/img/D531106";
+const CORS = "https://cors-px.chrisg661.repl.co/"; // CORS proxy
+const SCALE = 550;
 var LEVEL = 2;
 var CURRENT_DATE;
-var canvas = document.getElementById('h8');
-var ctx = canvas.getContext('2d');
+var canvas = document.getElementById("h8");
+var zoomcanvas = document.querySelector('.panzoom');
+var ctx = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = true;
 ctx.imageSmoothingQuality = "high";
 
@@ -33,11 +34,11 @@ function latestdate(level) {
   {
     var resp = await fetch(uri);
     if (resp.status != 200) {
-      console.log('NOT OK!');
+      console.log("NOT OK!");
       return altlatestdate();
     }
     else {
-      var d = ((await resp.json()).date).replaceAll('-', '/').replaceAll(' ', '/').replaceAll(':', '');
+      var d = ((await resp.json()).date).replaceAll("-", "/").replaceAll(" ", "/").replaceAll(":", "");
       return d;
     }
   })();
@@ -101,45 +102,51 @@ var timer = setInterval(function() {
 
 canvas.onload = getEarth(LEVEL, true);
 
-const panzoom = Panzoom(canvas, {
-  minScale: 1,
-  maxScale: 5,
-  panOnlyWhenZoomed: true
-})
+if (zoomcanvas) {
+  const panzoom = Panzoom(zoomcanvas, {
+    animate: true,
+    minScale: 1,
+    maxScale: 10,
+    panOnlyWhenZoomed: true
+  })
 
-canvas.parentElement.addEventListener('wheel', function (event) {
-  if (!event.shiftKey) return;
-  panzoom.zoomWithWheel(event);
-})
+  zoomcanvas.parentElement.addEventListener("wheel", function (event) {
+    if (!event.shiftKey) return;
+    panzoom.zoomWithWheel(event);
+  })
 
-// 2,4,8,16,20
-
-canvas.addEventListener('panzoomchange', (event) => {
-  var prevLevel = LEVEL;
-  //console.log()
-  //console.log(event.detail) // => { x: 0, y: 0, scale: 1 }
-  if (event.detail.scale <= 1) {
-    LEVEL = 2
-  }
-  else if (event.detail.scale <= 2) {
-    LEVEL = 4
-  }
-  else if (event.detail.scale <= 3) {
-    LEVEL = 8
-  }
-  else if (event.detail.scale <= 4) {
-    LEVEL = 16
-  }
-  else if (event.detail.scale <= 5) {
-    //LEVEL = 20
-    LEVEL = 16
-  }
-  else {
-    console.log('huh')
-    LEVEL = 2
-  }
-  if (LEVEL != prevLevel) {
-    //console.log("current scale: ", prevLevel, LEVEL, event.detail.scale)
-    getEarth(LEVEL, true)
-  }
-})
+  // 2,4,8,16,20
+  zoomcanvas.addEventListener("panzoomchange", (event) => {
+    var prevLevel = LEVEL;
+    console.log(event.detail) // => { x: 0, y: 0, scale: 1 }
+    if (event.detail.scale <= 1.5) {
+      LEVEL = 2
+    }
+    else if (event.detail.scale <= 2.5) {
+      LEVEL = 4
+    }
+    else if (event.detail.scale <= 3.5) {
+      LEVEL = 8
+    }
+    else if (event.detail.scale <= 4.5) {
+      LEVEL = 16
+    }
+    else if (event.detail.scale <= 5.5) {
+      LEVEL = 16
+    }
+    else if (event.detail.scale > 6) {
+      LEVEL = 20
+    }
+    else {
+      console.log("huh")
+      LEVEL = 2
+    }
+    if (event.detail.scale == 1 && event.detail.x != 0 && event.detail.y != 0) {
+      panzoom.pan(0,0,{ force: true }) // reset
+    }
+    if (LEVEL != prevLevel) {
+      //console.log("current scale: ", prevLevel, LEVEL, event.detail.scale)
+      getEarth(LEVEL, true)
+    }
+  })
+}
