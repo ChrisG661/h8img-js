@@ -33,7 +33,7 @@ function latestdate(level) {
   var date = (async function () {
     var resp = await fetch(uri);
     if (resp.status != 200) {
-      console.log("NOT OK!");
+      console.log("NOT OK! - CORS is broken, cannot fetch latest date");
       return altlatestdate();
     }
     else {
@@ -99,15 +99,29 @@ var timer = setInterval(function () {
   getEarth(LEVEL);
 }, 60 * 5 * 1000);
 
-canvas.onload = getEarth(LEVEL, true);
+if (!zoomcanvas) {
+  canvas.onload = getEarth(LEVEL, true);
+}
 
 if (zoomcanvas) {
   const panzoom = Panzoom(zoomcanvas, {
     animate: true,
-    minScale: 1,
+    minScale: 0.15,
     maxScale: 10,
+    startScale: 0.15,
     panOnlyWhenZoomed: true
   })
+  
+  async function animate() {
+    await getEarth(LEVEL, true);
+    setTimeout(function(){
+      panzoom.zoom(1, {duration: 2000});
+      panzoom.setOptions({minScale: 1})
+    }, 1500);
+
+  }
+
+  zoomcanvas.onload = animate();
 
   zoomcanvas.parentElement.addEventListener("wheel", function (event) {
     if (!event.shiftKey) return;
@@ -147,4 +161,14 @@ if (zoomcanvas) {
       getEarth(LEVEL, true)
     }
   })
+
+  document.addEventListener('keydown', 
+    function (event) {
+      //console.log(event);
+      //console.log(event.key);
+      if (event.key == 'z') {
+        animate();
+      }
+    }
+  )
 }
