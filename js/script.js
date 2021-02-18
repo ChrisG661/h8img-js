@@ -9,6 +9,7 @@ var CORS = "https://cors-px.chrisg661.repl.co/"; // CORS proxy
 var SCALE = 550;
 var LEVEL = 2;
 var CURRENT_DATE;
+var currentDelay = 20;
 var canvas = document.getElementById("h8");
 var zoomcanvas = document.querySelector('.panzoom');
 var ctx = canvas.getContext("2d");
@@ -162,14 +163,3 @@ if (zoomcanvas) {
       getEarth(LEVEL, true)
     }
   })
-
-  document.addEventListener('keydown', 
-    function (event) {
-      //console.log(event);
-      //console.log(event.key);
-      if (event.key == 'z') {
-        animate();
-      }
-    }
-  )
-}
