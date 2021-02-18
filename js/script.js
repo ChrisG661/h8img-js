@@ -106,6 +106,7 @@ if (!zoomcanvas) {
 if (zoomcanvas) {
   const panzoom = Panzoom(zoomcanvas, {
     animate: true,
+    canvas: true,
     minScale: 0.15,
     maxScale: 10,
     startScale: 0.15,
