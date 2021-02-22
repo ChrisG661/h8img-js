@@ -163,3 +163,4 @@ if (zoomcanvas) {
       getEarth(LEVEL, true)
     }
   })
+}
