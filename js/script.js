@@ -51,19 +51,24 @@ function latestUrl(x, y, level, date) {
 }
 
 async function getEarth(currentLevel, detailChange = false) {
+  var date = await latestdate(currentLevel).then(function (date) { return date });
+  if ((date == CURRENT_DATE && !detailChange)) {
+    return;
+  }
+  else {
+    CURRENT_DATE = date;
+  }
   canvas.width = currentLevel * SCALE;
   canvas.height = currentLevel * SCALE;
   var h = [...Array(currentLevel).keys()];
   var v = [...Array(currentLevel).keys()];
   var img;
   var url;
-  var date = await latestdate(currentLevel).then(function (date) { return date });
-  if (date == CURRENT_DATE && !detailChange) {
-    return;
-  }
-  else {
-    CURRENT_DATE = date;
-  }
+  var maskWidth = canvas.width - (canvas.width*0.008);
+  ctx.beginPath();
+  ctx.arc(canvas.width/2,canvas.width/2,maskWidth/2,0,2*Math.PI);
+  ctx.closePath();
+  ctx.clip();
   for (var x of h) {
     for (var y of v) {
       url = latestUrl(x, y, currentLevel, date);
